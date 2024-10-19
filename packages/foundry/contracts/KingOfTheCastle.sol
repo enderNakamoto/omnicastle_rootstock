@@ -185,5 +185,35 @@ contract KingOfTheCastle is AccessControl {
         return attackingPower > defendingPower;
     }
 
+    // weather effects
+    function calculateAdjustedArmyPower(Army memory army, Weather weather) private pure returns (uint256) {
+        uint256 archerPower = army.archers;
+        uint256 infantryPower = army.infantry;
+        uint256 cavalryPower = army.cavalry;
+
+        if (weather == Weather.CLOUDS) {
+            archerPower = archerPower * Consts.ADVANTAGE  / 100;
+            cavalryPower = cavalryPower * Consts.EXTREME_ADVANTAGE / 100;
+        } else if (weather == Weather.SNOW) {
+            archerPower = archerPower * Consts.ADVANTAGE / 100;
+            infantryPower = infantryPower * Consts.ADVANTAGE / 100;
+            cavalryPower = cavalryPower * Consts.DISADVANTAGE / 100;
+        } else if (weather == Weather.RAIN) {
+            archerPower = archerPower * Consts.DISADVANTAGE / 100;
+            infantryPower = infantryPower * Consts.ADVANTAGE / 100;
+            cavalryPower = cavalryPower * Consts.DISADVANTAGE / 100;
+        } else if (weather == Weather.DRIZZLE) {
+            archerPower = archerPower * Consts.ADVANTAGE / 100;
+            infantryPower = infantryPower * Consts.ADVANTAGE / 100;
+        } else if (weather == Weather.THUNDERSTORM) {
+            archerPower = archerPower * Consts.DISADVANTAGE / 100;
+            infantryPower = infantryPower * Consts.EXTREME_ADVANTAGE / 100;
+            cavalryPower = cavalryPower * Consts.EXTREME_DISADVANTAGE / 100;
+        }
+        // Weather.CLEAR has no effect
+
+        return archerPower + infantryPower + cavalryPower;
+    }                      
+
 
 }

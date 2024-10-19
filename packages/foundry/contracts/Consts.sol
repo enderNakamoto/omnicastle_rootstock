@@ -2,6 +2,7 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 library Consts {
+    // basic game constants
     uint256 constant INITIAL_ARMY_SIZE = 500;
     uint256 constant INITIAL_POINTS = 0;
     uint256 constant INITIAL_TURNS = 10;
@@ -15,5 +16,12 @@ library Consts {
     uint256 constant POINTS_FOR_ATTACK_WIN = 100;
     uint256 constant POINTS_PER_TURN_FOR_KING = 10;
     uint256 constant MAX_TURNS = 100;
+
+    // Weather effect constants
+    uint256 constant ADVANTAGE = 110;
+    uint256 constant EXTREME_ADVANTAGE = 120;
+    uint256 constant DISADVANTAGE = 90;
+    uint256 constant EXTREME_DISADVANTAGE = 80;
+    uint256 constant NO_EFFECT = 100;
 
 }

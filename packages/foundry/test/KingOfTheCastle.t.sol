@@ -10,11 +10,14 @@ contract KingOfTheCastleTest is Test {
     address public owner;
     address public player1;
     address public player2;
+    address public attacker;
+
 
     function setUp() public {
         owner = address(this);
         player1 = address(0x1);
         player2 = address(0x2);
+        attacker = address(0x3);
         game = new KingOfTheCastle();
     }
 
@@ -276,5 +279,131 @@ contract KingOfTheCastleTest is Test {
         vm.prank(player1);
         vm.expectRevert();
         game.setWeather(KingOfTheCastle.Weather.RAIN);
+    }
+
+    // Battle tests 
+    function testBattleInClearWeather() public {
+        game.setWeather(KingOfTheCastle.Weather.CLEAR);
+        
+        // Equal forces, defender should win
+        _setupAndAssertBattle(500, 500, 500, 500, 500, 500, false);
+        
+        // Attacker slightly stronger, should win
+        _setupAndAssertBattle(500, 500, 500, 501, 501, 501, true);
+    }
+
+    function testBattleInCloudyWeather() public {
+        game.setWeather(KingOfTheCastle.Weather.CLOUDS);
+        
+        // Equal forces, attacker should win due to archer and cavalry advantage
+        _setupAndAssertBattle(500, 500, 500, 500, 500, 500, true);
+        
+        // Defender slightly stronger, but attacker still wins due to weather
+        _setupAndAssertBattle(510, 510, 510, 500, 500, 500, true);
+        
+        // Defender much stronger, should still win despite weather
+        _setupAndAssertBattle(600, 600, 600, 500, 500, 500, false);
+    }
+
+    function testBattleInSnowWeather() public {
+        game.setWeather(KingOfTheCastle.Weather.SNOW);
+        
+        // Equal forces, attacker should win due to archer and infantry advantage
+        _setupAndAssertBattle(500, 500, 500, 500, 500, 500, true);
+        
+        // Attacker with more cavalry, but still loses due to snow disadvantage
+        _setupAndAssertBattle(500, 500, 500, 450, 450, 650, false);
+        
+        // Defender with more cavalry, loses due to snow disadvantage
+        _setupAndAssertBattle(450, 450, 650, 500, 500, 500, true);
+    }
+
+    function testBattleInRainWeather() public {
+        game.setWeather(KingOfTheCastle.Weather.RAIN);
+        
+        // Equal forces, slight advantage to infantry-heavy army
+        _setupAndAssertBattle(500, 500, 500, 450, 600, 450, true);
+        
+        // Archer and cavalry heavy army loses to infantry heavy army
+        _setupAndAssertBattle(600, 400, 600, 400, 800, 400, true);
+    }
+
+    function testBattleInDrizzleWeather() public {
+        game.setWeather(KingOfTheCastle.Weather.DRIZZLE);
+        
+        // Equal forces, attacker wins due to archer and infantry advantage
+        _setupAndAssertBattle(500, 500, 500, 500, 500, 500, true);
+        
+        // Defender with more cavalry, but loses due to no advantage in drizzle
+        _setupAndAssertBattle(450, 450, 650, 550, 550, 450, true);
+    }
+
+    function testBattleInThunderstormWeather() public {
+        game.setWeather(KingOfTheCastle.Weather.THUNDERSTORM);
+        
+        // Equal forces, infantry-heavy army wins
+        _setupAndAssertBattle(500, 500, 500, 400, 700, 400, true);
+        
+        // Extreme case: all cavalry vs all infantry
+        _setupAndAssertBattle(0, 0, 1500, 0, 1000, 0, true);
+        
+        // Balanced army vs infantry-heavy army
+        _setupAndAssertBattle(500, 500, 500, 300, 900, 300, true);
+    }
+
+    function testEdgeCaseBattles() public {
+        // Test with minimum possible armies
+        game.setWeather(KingOfTheCastle.Weather.CLEAR);
+        _setupAndAssertBattle(1, 1, 1, 2, 2, 2, true);
+
+        // Test with maximum possible armies (respecting MAX_DEFENSE and MAX_ATTACK)
+        game.setWeather(KingOfTheCastle.Weather.CLEAR);
+        _setupAndAssertBattle(500, 500, 500, 667, 667, 666, true);
+
+        // Test where weather effect just barely tips the balance
+        game.setWeather(KingOfTheCastle.Weather.CLOUDS);
+        _setupAndAssertBattle(500, 500, 500, 455, 500, 455, true);
+    }
+
+    // Helper function to set up a battle scenario and assert the outcome
+        function _setupAndAssertBattle(
+        uint256 defenseArchers, 
+        uint256 defenseInfantry, 
+        uint256 defenseCavalry,
+        uint256 attackArchers,
+        uint256 attackInfantry,
+        uint256 attackCavalry,
+        bool expectedAttackerVictory
+    ) private {
+        require(defenseArchers + defenseInfantry + defenseCavalry <= Consts.MAX_DEFENSE, "Defense exceeds MAX_DEFENSE");
+        require(attackArchers + attackInfantry + attackCavalry <= Consts.MAX_ATTACK, "Attack exceeds MAX_ATTACK");
+
+        // Set up defender (owner)
+        game.changeDefense(defenseArchers, defenseInfantry, defenseCavalry);
+
+        // Advance time to bypass the attack cooldown
+        vm.warp(block.timestamp + Consts.ATTACK_COOLDOWN + 1);
+
+        // Set up attacker
+        vm.startPrank(attacker);
+        game.joinGame("Attacker");
+        game.mobilize(attackArchers, attackInfantry, attackCavalry);
+        game.attack();
+        vm.stopPrank();
+
+        // Assert the battle outcome
+        if (expectedAttackerVictory) {
+            assertEq(game.getCastle().currentKing, attacker, "Attacker should have won the battle");
+        } else {
+            assertEq(game.getCastle().currentKing, owner, "Defender should have won the battle");
+        }
+
+        // Reset the game state for the next test
+        if (game.getCastle().currentKing != owner) {
+            vm.prank(attacker);
+            game.changeDefense(Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE);
+        }
+        game.tickTock(); // Add turns
+        vm.warp(block.timestamp + Consts.TURN_INTERVAL + 1); // Advance time for tickTock
     }
 }
