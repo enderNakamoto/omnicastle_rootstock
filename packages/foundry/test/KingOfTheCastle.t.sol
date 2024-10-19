@@ -77,11 +77,7 @@ contract KingOfTheCastleTest is Test {
         assertEq(player.turns, Consts.INITIAL_TURNS - Consts.TURNS_NEEDED_FOR_MOBILIZE, "Turns should be deducted after mobilization");
     }
 
-    function testTickTock() public {
-        // Add two more players
-        address player1 = address(0x1);
-        address player2 = address(0x2);
-        
+    function testTickTock() public {        
         vm.prank(player1);
         game.joinGame("General One");
         vm.prank(player2);

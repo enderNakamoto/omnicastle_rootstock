@@ -6,7 +6,7 @@ library Consts {
     uint256 constant INITIAL_POINTS = 0;
     uint256 constant INITIAL_TURNS = 10;
     uint256 constant MAX_ATTACK = 2000;
-    uint256 constant MAX_DEFENSE = 1500;
+    uint256 constant MAX_DEFENSE = 2000;
     uint256 constant TURNS_NEEDED_FOR_MOBILIZE = 1;
     uint256 constant TURNS_NEEDED_FOR_ATTACK = 3;
     uint256 constant TURNS_NEEDED_FOR_CHANGE_DEFENSE = 3;

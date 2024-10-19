@@ -185,4 +185,5 @@ contract KingOfTheCastle is AccessControl {
         return attackingPower > defendingPower;
     }
 
+
 }
