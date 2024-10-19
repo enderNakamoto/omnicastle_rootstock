@@ -31,6 +31,7 @@ contract KingOfTheCastle {
     }
 
     GameState public gameState;
+    uint256 public lastTickTock;
     address public immutable owner;
     address[] public playerAddresses;
 
@@ -42,6 +43,7 @@ contract KingOfTheCastle {
 
     constructor() {
         owner = msg.sender;
+        lastTickTock = block.timestamp;
         initializeGame();
     }
 
@@ -56,7 +58,7 @@ contract KingOfTheCastle {
     }
 
     function joinGame(string memory generalName) external {
-        require(gameState.players[msg.sender].turns == 0, "Player has already joined");
+        require(bytes(gameState.players[msg.sender].generalName).length == 0, "Player has already joined");
         gameState.players[msg.sender] = Player(
             generalName,
             Army(Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE),
@@ -114,7 +116,7 @@ contract KingOfTheCastle {
     }
 
     function tickTock() external {
-        require(msg.sender == owner, "Only the owner can call this function");
+        require(block.timestamp >= lastTickTock + Consts.TURN_INTERVAL, "Too soon to call tickTock");
         
         for (uint i = 0; i < playerAddresses.length; i++) {
             Player storage player = gameState.players[playerAddresses[i]];
@@ -127,6 +129,8 @@ contract KingOfTheCastle {
         if (gameState.players[gameState.castle.currentKing].points < type(uint256).max) {
             gameState.players[gameState.castle.currentKing].points += Consts.POINTS_PER_TURN_FOR_KING;
         }
+
+        lastTickTock = block.timestamp;
     }
 
     function calculateBattleOutcome(Army memory attackingArmy, Army memory defendingArmy) private pure returns (bool) {
@@ -137,5 +141,13 @@ contract KingOfTheCastle {
 
     function getPlayerCount() public view returns (uint256) {
         return playerAddresses.length;
+    }
+
+    function getCastle() public view returns (Castle memory) {
+        return gameState.castle;
+    }
+
+    function getPlayer(address playerAddress) public view returns (Player memory) {
+        return gameState.players[playerAddress];
     }
 }
