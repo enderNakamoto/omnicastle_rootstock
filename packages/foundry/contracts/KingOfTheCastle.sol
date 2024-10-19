@@ -69,6 +69,7 @@ contract KingOfTheCastle is AccessControl {
         gameState.castle.defense = Army(Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE);
         gameState.castle.currentKing = owner;
         gameState.castle.lastKingChangedAt = block.timestamp;
+        gameState.currentWeather = Weather.CLEAR;
 
         // Initialize the owner as the first player
         gameState.players[owner] = Player("Castle Owner", Army(Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE), Consts.INITIAL_POINTS, Consts.INITIAL_TURNS);
@@ -99,6 +100,11 @@ contract KingOfTheCastle is AccessControl {
         player.turns -= Consts.TURNS_NEEDED_FOR_MOBILIZE;
 
         emit ArmyMobilized(msg.sender, archers, infantry, cavalry);
+    }
+
+    function setWeather(Weather newWeather) external onlyRole(WEATHERMAN_ROLE) {
+        gameState.currentWeather = newWeather;
+        emit WeatherChanged(newWeather);
     }
 
     function attack() external {
@@ -167,12 +173,15 @@ contract KingOfTheCastle is AccessControl {
         return gameState.players[playerAddress];
     }
 
+    function getCurrentWeather() public view returns (Weather) {
+        return gameState.currentWeather;
+    }
+
 
     // Internal functions for the game
-
     function calculateBattleOutcome(Army memory attackingArmy, Army memory defendingArmy) private pure returns (bool) {
-        uint256 attackingPower = attackingArmy.archers * 2 + attackingArmy.infantry + attackingArmy.cavalry * 3;
-        uint256 defendingPower = defendingArmy.archers * 2 + defendingArmy.infantry + defendingArmy.cavalry * 3;
+        uint256 attackingPower = attackingArmy.archers + attackingArmy.infantry + attackingArmy.cavalry;
+        uint256 defendingPower = defendingArmy.archers + defendingArmy.infantry + defendingArmy.cavalry;
         return attackingPower > defendingPower;
     }
 

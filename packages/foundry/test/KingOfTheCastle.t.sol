@@ -8,9 +8,13 @@ import "../contracts/Consts.sol";
 contract KingOfTheCastleTest is Test {
     KingOfTheCastle public game;
     address public owner;
+    address public player1;
+    address public player2;
 
     function setUp() public {
         owner = address(this);
+        player1 = address(0x1);
+        player2 = address(0x2);
         game = new KingOfTheCastle();
     }
 
@@ -221,5 +225,60 @@ contract KingOfTheCastleTest is Test {
         assertEq(castle.defense.archers, Consts.INITIAL_ARMY_SIZE, "Archers should not change");
         assertEq(castle.defense.infantry, Consts.INITIAL_ARMY_SIZE, "Infantry should not change");
         assertEq(castle.defense.cavalry, Consts.INITIAL_ARMY_SIZE, "Cavalry should not change");
+    }
+
+    function testInitialWeather() public view {
+        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.CLEAR), "Initial weather should be CLEAR");
+    }
+
+    function testChangeWeatherAsOwner() public {
+        game.setWeather(KingOfTheCastle.Weather.RAIN);
+        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.RAIN), "Weather should be changed to RAIN");
+    }
+
+    function testChangeWeatherAsNonOwner() public {
+        vm.prank(player1);
+        vm.expectRevert();
+        game.setWeather(KingOfTheCastle.Weather.SNOW);
+    }
+
+    function testChangeWeatherMultipleTimes() public {
+        game.setWeather(KingOfTheCastle.Weather.CLOUDS);
+        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.CLOUDS), "Weather should be changed to CLOUDS");
+
+        game.setWeather(KingOfTheCastle.Weather.THUNDERSTORM);
+        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.THUNDERSTORM), "Weather should be changed to THUNDERSTORM");
+
+        game.setWeather(KingOfTheCastle.Weather.CLEAR);
+        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.CLEAR), "Weather should be changed back to CLEAR");
+    }
+
+    function testWeatherChangeEvent() public {
+        vm.expectEmit(true, true, true, true);
+        emit KingOfTheCastle.WeatherChanged(KingOfTheCastle.Weather.DRIZZLE);
+        game.setWeather(KingOfTheCastle.Weather.DRIZZLE);
+    }
+
+    function testGrantWeathermanRole() public {
+        // Grant WEATHERMAN_ROLE to player1
+        game.grantRole(game.WEATHERMAN_ROLE(), player1);
+
+        // player1 should now be able to change the weather
+        vm.prank(player1);
+        game.setWeather(KingOfTheCastle.Weather.SNOW);
+        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.SNOW), "Weather should be changed to SNOW by player1");
+    }
+
+    function testRevokeWeathermanRole() public {
+        // Grant WEATHERMAN_ROLE to player1
+        game.grantRole(game.WEATHERMAN_ROLE(), player1);
+
+        // Revoke WEATHERMAN_ROLE from player1
+        game.revokeRole(game.WEATHERMAN_ROLE(), player1);
+
+        // player1 should no longer be able to change the weather
+        vm.prank(player1);
+        vm.expectRevert();
+        game.setWeather(KingOfTheCastle.Weather.RAIN);
     }
 }
