@@ -57,6 +57,8 @@ contract KingOfTheCastle {
         playerAddresses.push(owner);
     }
 
+    // Public functions for the game
+
     function joinGame(string memory generalName) external {
         require(bytes(gameState.players[msg.sender].generalName).length == 0, "Player has already joined");
         gameState.players[msg.sender] = Player(
@@ -133,11 +135,7 @@ contract KingOfTheCastle {
         lastTickTock = block.timestamp;
     }
 
-    function calculateBattleOutcome(Army memory attackingArmy, Army memory defendingArmy) private pure returns (bool) {
-        uint256 attackingPower = attackingArmy.archers * 2 + attackingArmy.infantry + attackingArmy.cavalry * 3;
-        uint256 defendingPower = defendingArmy.archers * 2 + defendingArmy.infantry + defendingArmy.cavalry * 3;
-        return attackingPower > defendingPower;
-    }
+    // view functions for the game
 
     function getPlayerCount() public view returns (uint256) {
         return playerAddresses.length;
@@ -150,4 +148,14 @@ contract KingOfTheCastle {
     function getPlayer(address playerAddress) public view returns (Player memory) {
         return gameState.players[playerAddress];
     }
+
+
+    // Internal functions for the game
+
+    function calculateBattleOutcome(Army memory attackingArmy, Army memory defendingArmy) private pure returns (bool) {
+        uint256 attackingPower = attackingArmy.archers * 2 + attackingArmy.infantry + attackingArmy.cavalry * 3;
+        uint256 defendingPower = defendingArmy.archers * 2 + defendingArmy.infantry + defendingArmy.cavalry * 3;
+        return attackingPower > defendingPower;
+    }
+
 }
