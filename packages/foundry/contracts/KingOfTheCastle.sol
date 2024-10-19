@@ -2,8 +2,18 @@
 pragma solidity >=0.8.0 <0.9.0;
 
 import "./Consts.sol";
+import "@openzeppelin/contracts/access/AccessControl.sol";
 
-contract KingOfTheCastle {
+contract KingOfTheCastle is AccessControl {
+
+    enum Weather {
+        CLEAR,
+        CLOUDS,
+        SNOW,
+        RAIN,
+        DRIZZLE,
+        THUNDERSTORM
+    }
 	
     struct Army {
         uint256 archers;
@@ -28,6 +38,7 @@ contract KingOfTheCastle {
         mapping(address => Player) players;
         uint256 numberOfAttacks;
         Castle castle;
+        Weather currentWeather;
     }
 
     GameState public gameState;
@@ -35,16 +46,23 @@ contract KingOfTheCastle {
     address public immutable owner;
     address[] public playerAddresses;
 
+    bytes32 public constant WEATHERMAN_ROLE = keccak256("WEATHERMAN_ROLE");
+
     event PlayerJoined(address player, string generalName);
     event ArmyMobilized(address player, uint256 archers, uint256 infantry, uint256 cavalry);
     event AttackLaunched(address attacker, address defender, bool success);
     event DefenseChanged(address king, uint256 archers, uint256 infantry, uint256 cavalry);
     event TurnAdded(address player, uint256 newTurns);
+    event WeatherChanged(Weather newWeather);
+
 
     constructor() {
         owner = msg.sender;
         lastTickTock = block.timestamp;
         initializeGame();
+
+        _grantRole(DEFAULT_ADMIN_ROLE, msg.sender);
+        _grantRole(WEATHERMAN_ROLE, msg.sender);
     }
 
     function initializeGame() private {

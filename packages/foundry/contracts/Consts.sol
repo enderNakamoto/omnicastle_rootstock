@@ -16,6 +16,4 @@ library Consts {
     uint256 constant POINTS_PER_TURN_FOR_KING = 10;
     uint256 constant MAX_TURNS = 100;
 
-    // SKALE specific
-    uint256 constant SFUEL_DISTRIBUTION_AMOUNT = 0.00001 ether;
 }
