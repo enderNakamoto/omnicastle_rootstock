@@ -7,7 +7,7 @@ import { GenericContractsDeclaration } from "~~/utils/scaffold-eth/contract";
 const deployedContracts = {
   22040: {
     KingOfTheCastle: {
-      address: "0x894bbfdce8b254bd880a6c43565dc377459d73dc",
+      address: "0xdf644855754f1c2e0d78bb647e6c1ecb12b7b126",
       abi: [
         {
           type: "constructor",
