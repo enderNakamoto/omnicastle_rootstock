@@ -1,5 +1,6 @@
 Github links related to the project:
 1. https://github.com/Cloakworks-collective/omnicastles_weather
+2. https://github.com/Cloakworks-collective/omnicastle_airdao
 
 # Omicastle on AirDao
 

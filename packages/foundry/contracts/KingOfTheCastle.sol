@@ -5,15 +5,6 @@ import "./Consts.sol";
 import "@openzeppelin/contracts/access/AccessControl.sol";
 
 contract KingOfTheCastle is AccessControl {
-
-    enum Weather {
-        CLEAR,
-        CLOUDS,
-        SNOW,
-        RAIN,
-        DRIZZLE,
-        THUNDERSTORM
-    }
 	
     struct Army {
         uint256 archers;
@@ -38,7 +29,7 @@ contract KingOfTheCastle is AccessControl {
         mapping(address => Player) players;
         uint256 numberOfAttacks;
         Castle castle;
-        Weather currentWeather;
+        uint256 fgIndex;
     }
 
     GameState public gameState;
@@ -53,7 +44,7 @@ contract KingOfTheCastle is AccessControl {
     event AttackLaunched(address attacker, address defender, bool success);
     event DefenseChanged(address king, uint256 archers, uint256 infantry, uint256 cavalry);
     event TurnAdded(address player, uint256 newTurns);
-    event WeatherChanged(Weather newWeather);
+    event FGIndexChanged(uint256 newFGIndex);
 
 
     constructor() {
@@ -69,7 +60,7 @@ contract KingOfTheCastle is AccessControl {
         gameState.castle.defense = Army(Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE);
         gameState.castle.currentKing = owner;
         gameState.castle.lastKingChangedAt = block.timestamp;
-        gameState.currentWeather = Weather.CLEAR;
+        gameState.fgIndex = 50;
 
         // Initialize the owner as the first player
         gameState.players[owner] = Player("Castle Owner", Army(Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE), Consts.INITIAL_POINTS, Consts.INITIAL_TURNS);
@@ -107,9 +98,9 @@ contract KingOfTheCastle is AccessControl {
     //     emit WeatherChanged(newWeather);
     // }
 
-    function setWeather(Weather newWeather) external {
-        gameState.currentWeather = newWeather;
-        emit WeatherChanged(newWeather);
+    function setFgIndex(uint256 fgIndex) external {
+        gameState.fgIndex = fgIndex;
+        emit FGIndexChanged(fgIndex);
     }
 
     function attack() external {
@@ -178,46 +169,28 @@ contract KingOfTheCastle is AccessControl {
         return gameState.players[playerAddress];
     }
 
-    function getCurrentWeather() public view returns (Weather) {
-        return gameState.currentWeather;
+    function getCurrentFgIndex() public view returns (uint256) {
+        return gameState.fgIndex;
     }
 
 
     // Internal functions for the game
     function calculateBattleOutcome(Army memory attackingArmy, Army memory defendingArmy) private view returns (bool) {
-        uint256 attackingPower = calculateAdjustedArmyPower(attackingArmy, gameState.currentWeather);
-        uint256 defendingPower = calculateAdjustedArmyPower(defendingArmy, gameState.currentWeather);
+        uint256 attackingPower = calculateAdjustedArmyPower(attackingArmy, 50); 
+        uint256 defendingPower = calculateAdjustedArmyPower(defendingArmy, gameState.fgIndex);
         return attackingPower > defendingPower;
     }
 
-    // weather effects
-    function calculateAdjustedArmyPower(Army memory army, Weather weather) private pure returns (uint256) {
+    // Fear Greed Index effects
+    function calculateAdjustedArmyPower(Army memory army, uint256 fgIndex) private pure returns (uint256) {
         uint256 archerPower = army.archers;
         uint256 infantryPower = army.infantry;
         uint256 cavalryPower = army.cavalry;
 
-        if (weather == Weather.CLOUDS) {
-            archerPower = archerPower * Consts.ADVANTAGE  / 100;
-            cavalryPower = cavalryPower * Consts.EXTREME_ADVANTAGE / 100;
-        } else if (weather == Weather.SNOW) {
-            archerPower = archerPower * Consts.ADVANTAGE / 100;
-            infantryPower = infantryPower * Consts.ADVANTAGE / 100;
-            cavalryPower = cavalryPower * Consts.DISADVANTAGE / 100;
-        } else if (weather == Weather.RAIN) {
-            archerPower = archerPower * Consts.DISADVANTAGE / 100;
-            infantryPower = infantryPower * Consts.ADVANTAGE / 100;
-            cavalryPower = cavalryPower * Consts.DISADVANTAGE / 100;
-        } else if (weather == Weather.DRIZZLE) {
-            archerPower = archerPower * Consts.ADVANTAGE / 100;
-            infantryPower = infantryPower * Consts.ADVANTAGE / 100;
-        } else if (weather == Weather.THUNDERSTORM) {
-            archerPower = archerPower * Consts.DISADVANTAGE / 100;
-            infantryPower = infantryPower * Consts.EXTREME_ADVANTAGE / 100;
-            cavalryPower = cavalryPower * Consts.EXTREME_DISADVANTAGE / 100;
-        }
-        // Weather.CLEAR has no effect
+        uint256 basePower = archerPower + infantryPower + cavalryPower;
+        uint256 adjustedPower = basePower * fgIndex / 100;
 
-        return archerPower + infantryPower + cavalryPower;
+        return adjustedPower;
     }                      
 
 
