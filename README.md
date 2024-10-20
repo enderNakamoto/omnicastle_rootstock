@@ -1,3 +1,6 @@
+Github links related to the project:
+1. https://github.com/Cloakworks-collective/omnicastles_weather
+
 # Omicastle on AirDao
 
 In **Omni Castles**, players compete to capture and defend a castle deployed on AirDAO. The objective is to hold the castle as long as possible, earning points as the ruling player. The game features strategic army management, weather effects, and resource management through turns. Players can join, mobilize armies, attack the castle, and change its defense if they become the king (castle's ruler).
