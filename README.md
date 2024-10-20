@@ -2,6 +2,44 @@
 
 In **Omni Castles**, players compete to capture and defend a castle deployed on AirDAO. The objective is to hold the castle as long as possible, earning points as the ruling player. The game features strategic army management, weather effects, and resource management through turns. Players can join, mobilize armies, attack the castle, and change its defense if they become the king (castle's ruler).
 
+## Contributions of the project to AirDao
+
+Omni Castles is a fully on-chain game deployed on AirDAO, introducing the first oracle-supported mechanics to the platform. AirDAO currently does not have oracle support, and this project's core innovation lies in introducing **Acurast Oracles** to the ecosystem. The key components include:
+
+## Leveraging Acurast Oracles
+Omni Castles utilizes **Acurast** to run Node.js scripts, acting as a critical oracle for non-financial data, such as weather. This weather data, fetched from the OpenWeather API, is central to the in-game mechanics. For instance, Tokyo’s weather is updated every 6 hours, and these updates directly influence battles, affecting unit strengths and strategies.
+
+## Decentralized Keepers via Acurast
+Acurast also functions as decentralized keepers, executing scheduled cron jobs. In Omni Castles, player statuses are updated every hour, and this automation ensures seamless gameplay. This keeper mechanism can also be extended to other decentralized, turn-based games on AirDAO, creating new possibilities for fully automated, oracle-powered experiences.
+
+## Acurast Integration (Oracle and Keeper) and trust assumptions:
+
+By introducing oracle functionality to AirDAO through **Acurast**, Omni Castles pioneers decentralized gaming on a platform that previously lacked access to such external data. This demonstration opens up new possibilities for other decentralized applications on AirDAO.
+
+Acurast is a decentralized and trustless compute execution layer, leveraging Trust Execution Environments opening up the capability to have Acurast’s Processors (off-chain workers) fetch, sign and submit data on-chain completely trustless and confidential. The processors are highly decentralized and uses processing power of old mobile phones. 
+
+For our proof of concept, we deployed nodejs script on a Acurast processor that fetches weather data from [openweathermap api](https://openweathermap.org/current). Assuming that the data from Openweather API is correct, the data is forwarded to the game smart contract (move module) without additional trust overhead. It is signed by a preassigned weatherman, verifying that the incoming data comes from the acurast processor. 
+
+The acurast data sets the weather condition to one of the following options, based on the [weather condition codes of the api](https://openweathermap.org/weather-conditions)
+
+```rust
+    const CLEAR: u8 = 0;
+    const CLOUDS: u8 = 1;
+    const SNOW: u8 = 2;
+    const RAIN: u8 = 3;
+    const DRIZZLE: u8 = 4;
+    const THUNDERSTORM: u8 = 5;
+```
+Each weather condition affects the effectiveness of the units, adding a layer of strategy to the game. 
+
+Moreover, we also use a second script to call `tick_tock()` function of the module to update player states every turn. This is a proof of concept use of Acurast processors as ** decentralized keepers**. This function is not gated (anyone call this), however there is an internal check that only affects the game state if it is called after 1 hr has passed.
+
+Note: You can find out more on Acurast's trust minimized processing [here](https://docs.acurast.com/acurast-protocol/architecture/end-to-end/)
+
+Acurast processor clusters are highly decentralized and permissionless, allowing anyone to join and contribute, making the network more resilient and distributed. The picture below showcases various processor clusters. The one on the left represents our cluster, where our proof-of-concept scripts are currently running. In production, we plan to deploy to a randomly selected processor within the Acurast ecosystem (ones that we do not own), with multiple redundancies to further minimize trust assumptions and enhance reliability.
+
+![alt text](image-1.png)
+
 ## Key Concepts
 - **Castle**: The central stronghold that players aim to capture and defend.
 - **Army**: Comprised of archers, infantry, and cavalry units, which are used both in attack and defense.
