@@ -35,4 +35,14 @@ Deployed at: 0xCD05229f4D382c0C8dA75c83011E55299EeA6b2b
 
 Transactions: https://testnet.airdao.io/explorer/address/0x1FC950ff4be0403f9ad51c9192AebbD617b72E4E/
 
+4. Tests 
+
+We have really good test coverage :
+
+```
+yarn foundry:test
+```
+![alt text](image.png)
+
+
 ## Project: 
