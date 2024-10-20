@@ -33,6 +33,8 @@ airDaoDevnet = "https://network.ambrosus-dev.io/"
 airDaoTestnet = "https://network.ambrosus-test.io"
 airDaoMainnet = "https://network.ambrosus.io"
 
+rootstockTestNet = "https://public-node.testnet.rsk.co"
+
 
 [etherscan]
 polygonMumbai = { key = "${ETHERSCAN_API_KEY}" }
