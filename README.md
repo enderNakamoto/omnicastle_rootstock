@@ -10,7 +10,7 @@ In **Omni Castles**, players compete to capture and defend a castle deployed on 
 Omni Castles is a fully on-chain game deployed on Rootstock, introducing the first oracle-supported mechanics to the platform. Rootstock currently does not have non-pricefeed oracle support, and this project's core innovation lies in introducing **Acurast Oracles** to the ecosystem. The key components include:
 
 ### Leveraging Acurast Oracles
-Omni Castles utilizes **Acurast** to run Node.js scripts, acting as a critical oracle for non-financial data, such as Fear Freed Index. This Fear Greed data, fetched from the Coin Market Cap API, is central to the in-game mechanics. For instance, Fear Greed Index is updated every 6 hours, and these updates directly influence battles, affecting unit strengths and strategies.
+Omni Castles utilizes **Acurast** to run Node.js scripts, acting as a critical oracle for non-financial data, such as Fear Greed Index. This Fear Greed data, fetched from the Coin Market Cap API, is central to the in-game mechanics. Fear Greed Index is updated every 6 hours, and these updates directly influence battles, affecting unit strengths and strategies.
 
 ### Decentralized Keepers via Acurast
 Acurast also functions as decentralized keepers, executing scheduled cron jobs. In Omni Castles, player statuses are updated every hour, and this automation ensures seamless gameplay. This keeper mechanism can also be extended to other decentralized, turn-based games on Rootstock, creating new possibilities for fully automated, oracle-powered experiences.
