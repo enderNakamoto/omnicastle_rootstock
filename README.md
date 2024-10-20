@@ -58,4 +58,3 @@ yarn deploy --network airdaoTestnet
 Deployed at: 0xCD05229f4D382c0C8dA75c83011E55299EeA6b2b
 
 
-
