@@ -98,7 +98,7 @@ contract KingOfTheCastle is AccessControl {
     //     emit WeatherChanged(newWeather);
     // }
 
-    function setFgIndex(uint256 fgIndex) external {
+    function setFgIndex(uint256 fgIndex) external onlyRole(WEATHERMAN_ROLE) {
         gameState.fgIndex = fgIndex;
         emit FGIndexChanged(fgIndex);
     }

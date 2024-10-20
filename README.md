@@ -1,10 +1,10 @@
 Github links related to the project:
-1. https://github.com/Cloakworks-collective/omnicastles_weather
-2. https://github.com/Cloakworks-collective/omnicastle_airdao
+1. https://github.com/enderNakamoto/omnicastle_fg
+2. https://github.com/Cloakworks-collective/omnicastle_rootstock
 
 # Omicastle on Rootstock
 
-In **Omni Castles**, players compete to capture and defend a castle deployed on Rootstock. The objective is to hold the castle as long as possible, earning points as the ruling player. The game features strategic army management, weather effects, and resource management through turns. Players can join, mobilize armies, attack the castle, and change its defense if they become the king (castle's ruler).
+In **Omni Castles**, players compete to capture and defend a castle deployed on Rootstock. The objective is to hold the castle as long as possible, earning points as the ruling player. The game features strategic army management, fear greed index effects, and resource management through turns. Players can join, mobilize armies, attack the castle, and change its defense if they become the king (castle's ruler).
 
 ## Contributions of the project to Rootstock
 Omni Castles is a fully on-chain game deployed on Rootstock, introducing the first oracle-supported mechanics to the platform. Rootstock currently does not have non-pricefeed oracle support, and this project's core innovation lies in introducing **Acurast Oracles** to the ecosystem. The key components include:
@@ -75,7 +75,7 @@ Acurast processor clusters are highly decentralized and permissionless, allowing
    - Determines the result of a battle by comparing the power of attacking and defending armies, adjusting for the current fear Greed Index.
 
 2. **`calculateAdjustedArmyPower(Army memory army, uint256 fgindex)`**
-   - Adjusts army power based on the fear greed index, favoring certain unit types under specific weather conditions.
+   - Adjusts army power based on the fear greed index, favoring certain unit types under specific index.
 
 ## Events
 
@@ -102,13 +102,8 @@ yarn chain
 This command starts a local Ethereum network using Foundry. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/foundry/foundry.toml`.
 
 ```
-evm_version = "Istanbul"
-
 [rpc_endpoints]
-airDaoDevnet = "https://network.ambrosus-dev.io/"
-airDaoTestnet = "https://network.ambrosus-test.io"
-airDaoMainnet = "https://network.ambrosus.io"
-
+rootstockTestNet = "https://public-node.testnet.rsk.co"
 ```
 
 3. deploy the test contract:
@@ -122,11 +117,9 @@ yarn deploy
 testnet:
 
 ```
-yarn deploy --network airdaoTestnet
+yarn deploy --network rootstockTestNet
 ```
 Deployed at: 0xCD05229f4D382c0C8dA75c83011E55299EeA6b2b
-
-Transactions: https://testnet.airdao.io/explorer/address/0x1FC950ff4be0403f9ad51c9192AebbD617b72E4E/
 
 4. Tests 
 

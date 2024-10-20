@@ -227,36 +227,20 @@ contract KingOfTheCastleTest is Test {
     }
 
     function testInitialWeather() public view {
-        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.CLEAR), "Initial weather should be CLEAR");
+        assertEq(uint(game.getCurrentFgIndex()), uint(50), "Initial index should be 50");
     }
 
     function testChangeWeatherAsOwner() public {
-        game.setWeather(KingOfTheCastle.Weather.RAIN);
-        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.RAIN), "Weather should be changed to RAIN");
+        game.setFgIndex(10);
+        assertEq(uint(game.getCurrentFgIndex()), uint(10), "index should be changed to 10");
     }
 
     function testChangeWeatherAsNonOwner() public {
         vm.prank(player1);
         vm.expectRevert();
-        game.setWeather(KingOfTheCastle.Weather.SNOW);
+        game.setFgIndex(50);
     }
 
-    function testChangeWeatherMultipleTimes() public {
-        game.setWeather(KingOfTheCastle.Weather.CLOUDS);
-        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.CLOUDS), "Weather should be changed to CLOUDS");
-
-        game.setWeather(KingOfTheCastle.Weather.THUNDERSTORM);
-        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.THUNDERSTORM), "Weather should be changed to THUNDERSTORM");
-
-        game.setWeather(KingOfTheCastle.Weather.CLEAR);
-        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.CLEAR), "Weather should be changed back to CLEAR");
-    }
-
-    function testWeatherChangeEvent() public {
-        vm.expectEmit(true, true, true, true);
-        emit KingOfTheCastle.WeatherChanged(KingOfTheCastle.Weather.DRIZZLE);
-        game.setWeather(KingOfTheCastle.Weather.DRIZZLE);
-    }
 
     function testGrantWeathermanRole() public {
         // Grant WEATHERMAN_ROLE to player1
@@ -264,64 +248,22 @@ contract KingOfTheCastleTest is Test {
 
         // player1 should now be able to change the weather
         vm.prank(player1);
-        game.setWeather(KingOfTheCastle.Weather.SNOW);
-        assertEq(uint(game.getCurrentWeather()), uint(KingOfTheCastle.Weather.SNOW), "Weather should be changed to SNOW by player1");
+        game.setFgIndex(69);
+        assertEq(uint(game.getCurrentFgIndex()), uint(69), "index should be 69");
     }
 
-    function testRevokeWeathermanRole() public {
-        // Grant WEATHERMAN_ROLE to player1
-        game.grantRole(game.WEATHERMAN_ROLE(), player1);
-
-        // Revoke WEATHERMAN_ROLE from player1
-        game.revokeRole(game.WEATHERMAN_ROLE(), player1);
-
-        // player1 should no longer be able to change the weather
-        vm.prank(player1);
-        vm.expectRevert();
-        game.setWeather(KingOfTheCastle.Weather.RAIN);
-    }
 
     // Battle tests 
-    function testBattleInClearWeather() public {
-        game.setWeather(KingOfTheCastle.Weather.CLEAR);
+    function testBattlehighIndex() public {
+        game.setFgIndex(100);
         // Equal forces, defender should win
         _setupAndAssertBattle(500, 500, 500, 500, 500, 500, false);
     }
 
-    function testBattleInClearWeather2() public {
-        game.setWeather(KingOfTheCastle.Weather.CLEAR);
+    function testBattleLowIndex() public {
+        game.setFgIndex(10);
         // Attacker slightly stronger, should win
-        _setupAndAssertBattle(500, 500, 500, 501, 501, 501, true);
-    }
-
-    function testBattleInCloudyWeather() public {
-        game.setWeather(KingOfTheCastle.Weather.CLOUDS);
-        // Equal forces, attacker should win due to cavalry advantage in cloudy weather
-        _setupAndAssertBattle(500, 500, 500, 500, 400, 600, true);
-    }
-
-    function testBattleInSnowWeather() public {
-        game.setWeather(KingOfTheCastle.Weather.SNOW);        
-        // Attacker with more cavalry, but still loses due to snow disadvantage
-        _setupAndAssertBattle(500, 500, 500, 400, 400, 700, false);
-    }
-
-    function testBattleInRainWeather() public {
-        game.setWeather(KingOfTheCastle.Weather.RAIN);
-        // Equal forces, slight advantage to infantry-heavy army
-        _setupAndAssertBattle(500, 500, 500, 400, 700, 400, true);
-    }
-
-    function testBattleInDrizzleWeather() public {
-        game.setWeather(KingOfTheCastle.Weather.DRIZZLE);
-        // Defender with more cavalry, but loses due to no advantage in drizzle
-        _setupAndAssertBattle(450, 450, 650, 550, 550, 450, true);
-    }
-
-    function testBattleInThunderstormWeather() public {
-        game.setWeather(KingOfTheCastle.Weather.THUNDERSTORM);
-        // Equal forces, infantry-heavy army wins
-        _setupAndAssertBattle(500, 500, 500, 400, 700, 400, true);
+        _setupAndAssertBattle(500, 500, 500, 500, 500, 500, true);
     }
 
     // Helper function to set up a battle scenario and assert the outcome
@@ -357,12 +299,12 @@ contract KingOfTheCastleTest is Test {
             assertEq(game.getCastle().currentKing, owner, "Defender should have won the battle");
         }
 
-        // Reset the game state for the next test
-        // if (game.getCastle().currentKing != owner) {
-        //     vm.prank(attacker);
-        //     game.changeDefense(Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE);
-        // }
-        // game.tickTock(); // Add turns
-        // vm.warp(block.timestamp + Consts.TURN_INTERVAL + 1); // Advance time for tickTock
+        //Reset the game state for the next test
+        if (game.getCastle().currentKing != owner) {
+            vm.prank(attacker);
+            game.changeDefense(Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE, Consts.INITIAL_ARMY_SIZE);
+        }
+        game.tickTock(); // Add turns
+        vm.warp(block.timestamp + Consts.TURN_INTERVAL + 1); // Advance time for tickTock
     }
 }
