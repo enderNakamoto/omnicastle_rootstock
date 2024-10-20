@@ -179,9 +179,9 @@ contract KingOfTheCastle is AccessControl {
 
 
     // Internal functions for the game
-    function calculateBattleOutcome(Army memory attackingArmy, Army memory defendingArmy) private pure returns (bool) {
-        uint256 attackingPower = attackingArmy.archers + attackingArmy.infantry + attackingArmy.cavalry;
-        uint256 defendingPower = defendingArmy.archers + defendingArmy.infantry + defendingArmy.cavalry;
+    function calculateBattleOutcome(Army memory attackingArmy, Army memory defendingArmy) private view returns (bool) {
+        uint256 attackingPower = calculateAdjustedArmyPower(attackingArmy, gameState.currentWeather);
+        uint256 defendingPower = calculateAdjustedArmyPower(defendingArmy, gameState.currentWeather);
         return attackingPower > defendingPower;
     }
 
