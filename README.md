@@ -1,17 +1,8 @@
 # Omicastle on AirDao
 ## Quickstart
 
-To get started with Scaffold-ETH 2, follow the steps below:
-
-1. Install dependencies 
-
 ```
 yarn install
-```
-
-2. Run a local network in the first terminal:
-
-```
 yarn chain
 ```
 
@@ -27,34 +18,21 @@ airDaoMainnet = "https://network.ambrosus.io"
 
 ```
 
-3. On a second terminal, deploy the test contract:
+3. deploy the test contract:
+
+Localchain:
 
 ```
 yarn deploy
 ```
 
-4. Run smart contract test with `yarn foundry:test`
+testnet:
 
-There's full unit test coverage for the smart contract: 
-![alt text](image.png)
-
-5. Deploying on testnet 
-
-Deploy and verify together:
-```
-forge script -f <devnet|testnet|mainnet> --private-key <YOUR_PRIVATE_KEY> --legacy --broadcast --verifier sourcify --verifier-url https://sourcify.ambrosus.io/ --verify CounterScript
-```
-
-for scaffold-eth:
-
-```
-yarn deploy --network network_name
-```
-Therefore, to deploy on airdaoTestnet:
 ```
 yarn deploy --network airdaoTestnet
 ```
-
 Deployed at: 0xCD05229f4D382c0C8dA75c83011E55299EeA6b2b
 
+Transactions: https://testnet.airdao.io/explorer/address/0x1FC950ff4be0403f9ad51c9192AebbD617b72E4E/
 
+## Project: 
