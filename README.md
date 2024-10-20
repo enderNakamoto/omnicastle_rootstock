@@ -3,17 +3,15 @@
 In **Omni Castles**, players compete to capture and defend a castle deployed on AirDAO. The objective is to hold the castle as long as possible, earning points as the ruling player. The game features strategic army management, weather effects, and resource management through turns. Players can join, mobilize armies, attack the castle, and change its defense if they become the king (castle's ruler).
 
 ## Contributions of the project to AirDao
-
 Omni Castles is a fully on-chain game deployed on AirDAO, introducing the first oracle-supported mechanics to the platform. AirDAO currently does not have oracle support, and this project's core innovation lies in introducing **Acurast Oracles** to the ecosystem. The key components include:
 
-## Leveraging Acurast Oracles
+### Leveraging Acurast Oracles
 Omni Castles utilizes **Acurast** to run Node.js scripts, acting as a critical oracle for non-financial data, such as weather. This weather data, fetched from the OpenWeather API, is central to the in-game mechanics. For instance, Tokyo’s weather is updated every 6 hours, and these updates directly influence battles, affecting unit strengths and strategies.
 
-## Decentralized Keepers via Acurast
+### Decentralized Keepers via Acurast
 Acurast also functions as decentralized keepers, executing scheduled cron jobs. In Omni Castles, player statuses are updated every hour, and this automation ensures seamless gameplay. This keeper mechanism can also be extended to other decentralized, turn-based games on AirDAO, creating new possibilities for fully automated, oracle-powered experiences.
 
 ## Acurast Integration (Oracle and Keeper) and trust assumptions:
-
 By introducing oracle functionality to AirDAO through **Acurast**, Omni Castles pioneers decentralized gaming on a platform that previously lacked access to such external data. This demonstration opens up new possibilities for other decentralized applications on AirDAO.
 
 Acurast is a decentralized and trustless compute execution layer, leveraging Trust Execution Environments opening up the capability to have Acurast’s Processors (off-chain workers) fetch, sign and submit data on-chain completely trustless and confidential. The processors are highly decentralized and uses processing power of old mobile phones. 
