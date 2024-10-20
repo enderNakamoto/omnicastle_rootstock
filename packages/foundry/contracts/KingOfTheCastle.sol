@@ -102,7 +102,12 @@ contract KingOfTheCastle is AccessControl {
         emit ArmyMobilized(msg.sender, archers, infantry, cavalry);
     }
 
-    function setWeather(Weather newWeather) external onlyRole(WEATHERMAN_ROLE) {
+    // function setWeather(Weather newWeather) external onlyRole(WEATHERMAN_ROLE) {
+    //     gameState.currentWeather = newWeather;
+    //     emit WeatherChanged(newWeather);
+    // }
+
+    function setWeather(Weather newWeather) external {
         gameState.currentWeather = newWeather;
         emit WeatherChanged(newWeather);
     }
